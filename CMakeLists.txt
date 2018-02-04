@@ -18,29 +18,8 @@ include_directories(fasttext)
 
 set(CMAKE_CXX_FLAGS " -pthread -std=c++11 -funroll-loops -O3 -march=native")
 
-set(HEADER_FILES
-    src/args.h
-    src/dictionary.h
-    src/fasttext.h
-    src/matrix.h
-    src/model.h
-    src/productquantizer.h
-    src/qmatrix.h
-    src/real.h
-    src/utils.h
-    src/vector.h)
-
-set(SOURCE_FILES
-    src/args.cc
-    src/dictionary.cc
-    src/fasttext.cc
-    src/main.cc
-    src/matrix.cc
-    src/model.cc
-    src/productquantizer.cc
-    src/qmatrix.cc
-    src/utils.cc
-    src/vector.cc)
+file(GLOB_RECURSE HEADER_FILES "src/*.h")
+file(GLOB_RECURSE SOURCE_FILES "src/*.cc")
 
 add_library(fasttext-shared SHARED ${SOURCE_FILES} ${HEADER_FILES})
 add_library(fasttext-static STATIC ${SOURCE_FILES} ${HEADER_FILES})

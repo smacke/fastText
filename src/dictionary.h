@@ -19,6 +19,9 @@
 
 #include "args.h"
 #include "real.h"
+#include "custom_subwords.h"
+
+#define CUSTOM_SUBWORD_FILE "custom_subwords.txt" // FIXME make this dynamic and/or optional
 
 namespace fasttext {
 
@@ -48,6 +51,7 @@ class Dictionary {
     std::shared_ptr<Args> args_;
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
+    CustomSubwords custom_subwords_;
 
     std::vector<real> pdiscard_;
     int32_t size_;

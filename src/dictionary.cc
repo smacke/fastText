@@ -17,6 +17,7 @@
 #include <iterator>
 #include <cmath>
 #include <stdexcept>
+#include <fstream>
 
 namespace fasttext {
 
@@ -26,10 +27,12 @@ const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
   word2int_(MAX_VOCAB_SIZE, -1), size_(0), nwords_(0), nlabels_(0),
-  ntokens_(0), pruneidx_size_(-1) {}
+  ntokens_(0), pruneidx_size_(-1), custom_subwords_(std::ifstream(CUSTOM_SUBWORD_FILE))
+{}
 
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in) : args_(args),
-  size_(0), nwords_(0), nlabels_(0), ntokens_(0), pruneidx_size_(-1) {
+  size_(0), nwords_(0), nlabels_(0), ntokens_(0), pruneidx_size_(-1), custom_subwords_(std::ifstream(CUSTOM_SUBWORD_FILE))
+{
   load(in);
 }
 
@@ -155,17 +158,25 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
-    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
-      ngram.push_back(word[j++]);
-      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
-        ngram.push_back(word[j++]);
+    for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
+      if (subword.size() > args_->maxn || subword.size() < args_->minn) {
+        continue;
       }
-      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
-        int32_t h = hash(ngram) % args_->bucket;
-        ngrams.push_back(nwords_ + h);
-        substrings.push_back(ngram);
-      }
+      int32_t h = hash(ngram) % args_->bucket;
+      pushHash(ngrams, h);
+      substrings.push_back(subword);
     }
+//    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
+//      ngram.push_back(word[j++]);
+//      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+//        ngram.push_back(word[j++]);
+//      }
+//      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+//        int32_t h = hash(ngram) % args_->bucket;
+//        ngrams.push_back(nwords_ + h);
+//        substrings.push_back(ngram);
+//      }
+//    }
   }
 }
 
@@ -174,16 +185,23 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
-    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
-      ngram.push_back(word[j++]);
-      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
-        ngram.push_back(word[j++]);
-      }
-      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+      for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
+        if (subword.size() > args_->maxn || subword.size() < args_->minn) {
+         continue;
+        }
         int32_t h = hash(ngram) % args_->bucket;
         pushHash(ngrams, h);
       }
-    }
+//    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
+//      ngram.push_back(word[j++]);
+//      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+//        ngram.push_back(word[j++]);
+//      }
+//      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+//        int32_t h = hash(ngram) % args_->bucket;
+//        pushHash(ngrams, h);
+//      }
+//    }
   }
 }
 
