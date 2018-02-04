@@ -158,6 +158,7 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
+#if CUSTOM_SUBWORD_FILE
     for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
       if (subword.size() > args_->maxn || subword.size() < args_->minn) {
         continue;
@@ -166,17 +167,19 @@ void Dictionary::computeSubwords(const std::string& word,
       pushHash(ngrams, h);
       substrings.push_back(subword);
     }
-//    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
-//      ngram.push_back(word[j++]);
-//      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
-//        ngram.push_back(word[j++]);
-//      }
-//      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
-//        int32_t h = hash(ngram) % args_->bucket;
-//        ngrams.push_back(nwords_ + h);
-//        substrings.push_back(ngram);
-//      }
-//    }
+#else
+    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
+      ngram.push_back(word[j++]);
+      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+        ngram.push_back(word[j++]);
+      }
+      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+        int32_t h = hash(ngram) % args_->bucket;
+        ngrams.push_back(nwords_ + h);
+        substrings.push_back(ngram);
+      }
+    }
+#endif
   }
 }
 
@@ -185,6 +188,7 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
+#if CUSTOM_SUBWORD_FILE
       for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
         if (subword.size() > args_->maxn || subword.size() < args_->minn) {
          continue;
@@ -192,16 +196,18 @@ void Dictionary::computeSubwords(const std::string& word,
         int32_t h = hash(ngram) % args_->bucket;
         pushHash(ngrams, h);
       }
-//    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
-//      ngram.push_back(word[j++]);
-//      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
-//        ngram.push_back(word[j++]);
-//      }
-//      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
-//        int32_t h = hash(ngram) % args_->bucket;
-//        pushHash(ngrams, h);
-//      }
-//    }
+#else
+    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
+      ngram.push_back(word[j++]);
+      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+        ngram.push_back(word[j++]);
+      }
+      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+        int32_t h = hash(ngram) % args_->bucket;
+        pushHash(ngrams, h);
+      }
+    }
+#endif
   }
 }
 
