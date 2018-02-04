@@ -158,7 +158,7 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
-#if CUSTOM_SUBWORD_FILE
+#ifdef CUSTOM_SUBWORD_FILE
     for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
       if (subword.size() > args_->maxn || subword.size() < args_->minn) {
         continue;
@@ -188,7 +188,7 @@ void Dictionary::computeSubwords(const std::string& word,
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
-#if CUSTOM_SUBWORD_FILE
+#ifdef CUSTOM_SUBWORD_FILE
       for (auto& subword : custom_subwords_.getSubwordsFor(word)) {
         if (subword.size() > args_->maxn || subword.size() < args_->minn) {
          continue;

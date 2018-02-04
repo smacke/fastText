@@ -9,7 +9,7 @@
 
 CXX = c++
 CXXFLAGS = -pthread -std=c++0x -march=native
-OBJS = args.o dictionary.o productquantizer.o matrix.o qmatrix.o vector.o model.o utils.o fasttext.o
+OBJS = args.o custom_subwords.o dictionary.o productquantizer.o matrix.o qmatrix.o vector.o model.o utils.o fasttext.o
 INCLUDES = -I.
 
 opt: CXXFLAGS += -O3 -funroll-loops
@@ -21,7 +21,10 @@ debug: fasttext
 args.o: src/args.cc src/args.h
 	$(CXX) $(CXXFLAGS) -c src/args.cc
 
-dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
+custom_subwords.o: src/custom_subwords.cc src/custom_subwords.h
+	$(CXX) $(CXXFLAGS) -c src/custom_subwords.cc
+
+dictionary.o: src/dictionary.cc src/dictionary.h src/args.h src/custom_subwords.h
 	$(CXX) $(CXXFLAGS) -c src/dictionary.cc
 
 productquantizer.o: src/productquantizer.cc src/productquantizer.h src/utils.h
