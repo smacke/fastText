@@ -12,14 +12,14 @@ CustomSubwords::CustomSubwords(std::istream&& in) {
         std::istringstream iss(line);
         if (!iss.good()) continue;
         std::string key;
-        getline(iss, key, ',');
+        std::getline(iss, key, ',');
         if (!iss.good()) {
             throw std::runtime_error("malformed input");
         }
         std::vector<std::string> subwords;
         std::string subword;
         while (iss.good()) {
-            getline(iss, subword, ',');
+            std::getline(iss, subword, ',');
             subwords.push_back(subword);
         }
         subword_map[key] = subwords;
