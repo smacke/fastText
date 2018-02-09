@@ -16,6 +16,7 @@ public:
     const std::vector<std::string>& getSubwordsFor(const std::string& word) const;
 protected:
     std::map<const std::string, std::vector<std::string>> subword_map;
+    const std::vector<std::string> empty_vector;
 };
 
 

@@ -29,6 +29,6 @@ const std::vector<std::string>& CustomSubwords::getSubwordsFor(const std::string
     if (subword_map.find(word) != subword_map.end()) {
         return subword_map.at(word);
     } else {
-        return std::vector<std::string>();
+        return empty_vector;
     }
 }
