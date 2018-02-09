@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include <iostream>
 #include "custom_subwords.h"
 
 CustomSubwords::CustomSubwords(std::istream&& in) {
@@ -29,6 +30,7 @@ const std::vector<std::string>& CustomSubwords::getSubwordsFor(const std::string
     if (subword_map.find(word) != subword_map.end()) {
         return subword_map.at(word);
     } else {
+        std::cerr << "warning: no subwords found for " << word << std::endl;
         return empty_vector;
     }
 }
